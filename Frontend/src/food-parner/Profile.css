@@ -1,0 +1,7 @@
+/* MOBILE ONLY */
+
+@media screen and (max-width: 768px) {
+  .profile-video-overlay {
+    display: none !important;
+  }
+}
