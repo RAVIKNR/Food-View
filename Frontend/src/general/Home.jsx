@@ -43,9 +43,34 @@ const Home = () => {
   useEffect(()=>{
        axios.get('http://localhost:3000/api/food/',{withCredentials:true})
        .then(response =>{
+           
         setVideos(response.data.menu)
        })
   },[])
+
+      async function likeVideo(video) {
+        const response = await axios.post("http://localhost:3000/api/food/like", { foodId: video._id }, {withCredentials: true})
+
+        if(response.data.like){
+            console.log("Video liked");
+            setVideos((prev) => prev.map((v) => v._id === video._id ? { ...v, likeCount: v.likeCount + 1 } : v))
+        }else{
+            console.log("Video unliked");
+            setVideos((prev) => prev.map((v) => v._id === video._id ? { ...v, likeCount: v.likeCount - 1 } : v))
+        }
+}
+      async function saveVideo(video) {
+        const response = await axios.post("http://localhost:3000/api/food/save", { foodId: video._id }, {withCredentials: true})
+
+        if(response.data.save){
+            console.log("Video saved");
+            setVideos((prev) => prev.map((v) => v._id === video._id ? { ...v, saveCount: v.saveCount + 1 } : v))
+        }else{
+            console.log("Video unsaved");
+            setVideos((prev) => prev.map((v) => v._id === video._id ? { ...v, saveCount: v.saveCount - 1 } : v))
+        }
+}
+        
 
   const truncateDescription = (text, maxLines = 2) => {
     const lines = text.split('\n')
@@ -95,16 +120,30 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className="reel-side-actions">
-                <div className="reel-action-card">
-                  <span className="reel-action-circle">❤</span>
-                  <span className="reel-action-count">{video.likes ?? 23}</span>
-                </div>
-                <div className="reel-action-card">
-                  <span className="reel-action-circle">🔖</span>
-                  <span className="reel-action-count">{video.savedCount ?? video.bookmarks ?? 23}</span>
-                </div>
-              </div>
+             <div className="reel-side-actions">
+
+  <div className="reel-action-card">
+    <span onClick={()=>likeVideo(video)} className="reel-action-circle">❤</span>
+    <span className="reel-action-count">
+      {video.likeCount ?? 0}
+    </span>
+  </div>
+
+  <div className="reel-action-card">
+    <span className="reel-action-circle">💬</span>
+    <span className="reel-action-count">
+      {video.comments ?? 0}
+    </span>
+  </div>
+
+  <div className="reel-action-card">
+    <span onClick={()=>saveVideo(video)} className="reel-action-circle">🔖</span>
+    <span className="reel-action-count">
+      {video.saveCount ?? video.bookmarks ?? 0}
+    </span>
+  </div>
+
+</div>
 
               <button
                 className="visit-store-btn"
