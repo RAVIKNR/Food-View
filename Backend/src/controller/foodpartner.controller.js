@@ -8,8 +8,7 @@ async function getfoodpartnerById(req,res) {
 
     if(!foodPartner){
         return res.status(400).json({
-            message:"Food Partner Not Found",
-            
+            message:"Food Partner Not Found",           
         })
     }
 

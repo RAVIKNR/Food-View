@@ -54,7 +54,7 @@ async function likedFood(req,res){
     })
 
     if(isAlreadyLiked){
-      await likeModel.deleteOne({
+      await likesModel.deleteOne({
         user:user._id,
         food:foodId
       })
@@ -67,8 +67,8 @@ async function likedFood(req,res){
       })
 
     }
-    const like = await likeModel.create({
-        user:user._Id,
+    const like = await likesModel.create({
+        user:user._id,
         food:foodId
     })
 
@@ -76,13 +76,14 @@ async function likedFood(req,res){
         $inc:{likeCount:+1}
     })
       return res.status(200).json({
-        message:"Food liked"
+        message:"Food liked",
+        like
 })
 
 }
 
 async function savedFood(req,res) {
-  foodId = req.body
+  const {foodId} = req.body
   const user = req.user
 
   const isAlreadySaved = await saveModel.findOne({
@@ -96,6 +97,9 @@ async function savedFood(req,res) {
       user:user._id,
     food:foodId
     })
+      await foodModel.findByIdAndUpdate(foodId,{
+        $inc:{saveCount:-1}
+      })
 
     return res.status(200).json({
       message:"unsaved sucessfully"
@@ -103,17 +107,43 @@ async function savedFood(req,res) {
 
   }
 
-    await saveModel.create.findOne({
+   const save =  await saveModel.create({
       user:user._id,
       food:foodId
     })
 
+     await foodModel.findByIdAndUpdate(foodId,{
+        $inc:{saveCount:+1}
+     })
    
    return res.status(200).json({
-      message:"saved sucessfully"
+      message:"saved sucessfully",
+      save
    })
 
 }
 
-module.exports = {createFood,getFood,likedFood,savedFood}
+async function getSavedFood(req,res){
+
+  const user = req.user
+
+ const getfood = await saveModel
+  .find({ user: user._id })
+  .populate('food');
+  
+  if(!getfood || getfood.length === 0){
+    return res.status(404).json({
+      message:"No saved videos present"
+    })
+  }
+
+  return res.status(200).json({
+    mesage:"You saved Videos",
+    getfood
+  })
+
+
+}
+
+module.exports = {createFood,getFood,likedFood,savedFood,getSavedFood}
 

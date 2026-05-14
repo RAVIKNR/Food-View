@@ -20,11 +20,11 @@ const foodSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"foodpartner"
     },
-    likeReels:{
+    likeCount:{
         type:Number,
         default:0
     },
-    savedReels:{
+    saveCount:{
         type:Number,
         default:0
     }
